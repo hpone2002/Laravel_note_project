@@ -1,0 +1,105 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\Note;
+use Illuminate\Http\Request;
+
+class NoteController extends Controller
+{
+    /**
+     * Display a listing of the resource.
+     */
+    public function index()
+    {
+        $notes = Note::query()
+            ->where('user_id', request()->user()->id)
+            ->orderBy('created_at', 'desc')
+            ->paginate(6); // get()
+
+        // dd($notes);
+        return view('note.index', ['notes' => $notes]);
+    }
+
+    /**
+     * Show the form for creating a new resource.
+     */
+    public function create()
+    {
+        return view('note.create');
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     */
+    public function store(Request $request)
+    {
+        $data = $request->validate([
+            'note' => ['required', 'string']
+        ]);
+
+        $data['user_id'] = $request->user()->id;
+        $note = Note::create($data);
+        // change in Note Model
+        return to_route('note.show', $note)->with('message', 'Note was created'); // session
+    }
+
+    /**
+     * Display the specified resource.
+     */
+    public function show(string $id)
+    {  
+        $note = Note::find($id);
+
+        if ($note->user_id !== request()->user()->id) {
+            abort(403);
+        }
+
+        return view('note.show', ['note' => $note]);
+    }
+
+    /**
+     * Show the form for editing the specified resource.
+     */
+    public function edit(string $id)
+    {   
+        $note = Note::find($id);
+
+        if ($note->user_id !== request()->user()->id) {
+            abort(403);
+        }
+
+        return view('note.edit', ['note' => $note]);
+    }
+
+    /**
+     * Update the specified resource in storage.
+     */
+    public function update(Request $request, string $id)
+    {
+        $data = $request->validate([
+            'note' => ['required', 'string']
+        ]);
+
+        $note = Note::find($id);
+        $note->update($data);
+
+        return to_route('note.show', $note->id)->with('message', 'Note was updated');
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     */
+    public function destroy(string $id)
+    {
+        $note = Note::find($id);
+
+        if ($note->user_id !== request()->user()->id) {
+            abort(403);
+        }
+        
+        $note->delete();
+
+        return to_route('note.index')->with('delete_message', 'Note was deleted');
+    }
+}

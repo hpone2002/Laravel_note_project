@@ -1,0 +1,41 @@
+composer create-project laravel/laravel note
+
+php artisan serve (run laravel package)
+
+npm install (install frontend package)
+
+npm run dev (run vite)
+
+php artisan list (show all options)
+
+php artisan make:model Note -m (making model file includig migration file)
+
+After defining table structure in migration file , run this command
+php artisan migrate
+
+php artisan make:factory NoteFactory --model=Note 
+--model=Note , noteModel အတွက် Factory
+
+
+After defining counts in DatabaseSeeder.php, run this command
+php artisan migrate:refresh --seed
+(or)
+php artisan db:seed
+
+php artisan make:controller NoteController --resource --model=Note(making controller file)
+--resource = serve as resource
+
+
+php artisan make:view note.index
+
+Link css and js with vite in every components
+
+
+installing breeze package (user authentication)
+make sure to back up app.css and web.php before installing
+composer require laravel/breeze --dev
+php artisan breeze:install
+
+to get email resent , uncomment MustVerifyEmail in user.php
+
+create error layouts under views/errors
